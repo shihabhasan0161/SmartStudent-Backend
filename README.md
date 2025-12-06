@@ -57,38 +57,32 @@ A comprehensive Spring Boot application designed to help students manage their f
      docker run -d -p 8080:8080 --name smartstudent smartstudent-backend
      ```
      
-# API Endpoints
+## API Endpoints
 Authentication:
-- POST /api/auth/register - Register new user
-- POST /api/auth/login - User login
-- GET /api/auth/activate - Account activation via email
+- POST /api/v1/register - Register new user
+- POST /api/v1/login - User login
+- GET /api/v1/activate - Account activation via email
 
 Expenses:
-- GET /api/expenses - Get all expenses
-- POST /api/expenses - Create new expense
-- PUT /api/expenses/{id} - Update expense
-- DELETE /api/expenses/{id} - Delete expense
+- GET /api/v1/expenses - Get all expenses
+- POST /api/v1/expenses - Create new expense
+- DELETE /api/v1/expenses/{id} - Delete expense
 
 Income:
-- GET /api/income - Get all income entries
-- POST /api/income - Create new income
-- PUT /api/income/{id} - Update income
-- DELETE /api/income/{id} - Delete income
+- GET /api/v1/incomes - Get all income entries
+- POST /api/v1/incomes - Create new income
+- DELETE /api/v1/income/{id} - Delete income
 
 Categories:
-- GET /api/categories - Get all categories
-- POST /api/categories - Create new category
-- PUT /api/categories/{id} - Update category
-- DELETE /api/categories/{id} - Delete category
+- GET /api/v1/categories - Get all categories
+- GET /api/v1/categories/{type} - Get category by expenses/incomes type
+- POST /api/v1/categories - Create new category
+- PUT /api/v1/categories/{categoryId} - Update category
 
 Dashboard:
-- GET /api/dashboard - Get dashboard statistics
+- GET /api/v1/dashboard - Get dashboard data
 
-Profile:
-- GET /api/profile - Get user profile
-- PUT /api/profile - Update user profile
-
-# Contributing:
+## Contributing:
 1. Fork the repository
 2. Create your feature branch (git checkout -b feature/AmazingFeature)
 3. Commit your changes (git commit -m 'Add some AmazingFeature')
