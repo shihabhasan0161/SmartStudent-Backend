@@ -1,6 +1,8 @@
 package com.studentexpensetracker.studentexpensetracker.config;
 
+import com.studentexpensetracker.studentexpensetracker.security.CustomOAuth2SuccessHandler;
 import com.studentexpensetracker.studentexpensetracker.security.JwtAuthenticationFilter;
+import com.studentexpensetracker.studentexpensetracker.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,17 +24,27 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/status", "/register", "/activate", "/login").permitAll()
-                        .anyRequest().authenticated())
-                        .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/status", "/register", "/activate", "/login", "/oauth2/**", "/login/oauth2/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(
+                        o -> o
+                                .userInfoEndpoint(u -> u.userService(customOAuth2UserService)
+                                )
+                                .successHandler(customOAuth2SuccessHandler)
+                ) // OAuth2 login configuration
+                .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

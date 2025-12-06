@@ -2,6 +2,7 @@ package com.studentexpensetracker.studentexpensetracker.controller;
 
 import com.studentexpensetracker.studentexpensetracker.dto.AuthDTO;
 import com.studentexpensetracker.studentexpensetracker.dto.ProfileDTO;
+import com.studentexpensetracker.studentexpensetracker.service.AuthService;
 import com.studentexpensetracker.studentexpensetracker.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<ProfileDTO> registerProfile(@RequestBody ProfileDTO profileDTO) {
@@ -39,7 +41,7 @@ public class ProfileController {
             if(!profileService.isAccountActive(authDTO.getEmail())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Account is not activated. Please activate your account first."));
             }
-            Map<String, Object> response = profileService.authenticateAndGenerateToken(authDTO);
+            Map<String, Object> response = authService.authenticateAndGenerateToken(authDTO);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));

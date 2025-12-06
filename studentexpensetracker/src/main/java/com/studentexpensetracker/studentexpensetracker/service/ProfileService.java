@@ -1,14 +1,10 @@
 package com.studentexpensetracker.studentexpensetracker.service;
 
-import com.studentexpensetracker.studentexpensetracker.dto.AuthDTO;
 import com.studentexpensetracker.studentexpensetracker.dto.ProfileDTO;
 import com.studentexpensetracker.studentexpensetracker.entity.ProfileEntity;
 import com.studentexpensetracker.studentexpensetracker.repo.ProfileRepository;
-import com.studentexpensetracker.studentexpensetracker.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -25,8 +20,6 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
     @Value("${sbt.backend.url}")
     private String backendUrl;
 
@@ -113,20 +106,5 @@ public class ProfileService {
                 .updatedAt(currentUser.getUpdatedAt())
                 .build();
         return toDTO(profileEntity);
-    }
-
-    public Map<String, Object> authenticateAndGenerateToken(AuthDTO authDTO) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authDTO.getEmail(), authDTO.getPassword()));
-
-            String token = jwtUtil.generateToken(authDTO.getEmail());
-            return Map.of(
-                    "token", token,
-                    "user", getCurrentUserPublicProfile(authDTO.getEmail())
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid email or password");
-        }
     }
 }
